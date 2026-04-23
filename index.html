@@ -4,50 +4,173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Bellybutton Biodiversity</title>
+  <title>Belly Button Biodiversity Dashboard</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  <style>
+    /* ===== Global ===== */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+
+    /* ===== Header ===== */
+    .jumbotron {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      margin-bottom: 30px;
+      border-radius: 0;
+    }
+
+    .jumbotron h1 {
+      font-size: 2.8em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .jumbotron p {
+      font-size: 1.1em;
+      opacity: 0.85;
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #0f3460;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e8ecf1;
+    }
+
+    /* ===== Dropdown ===== */
+    .form-control {
+      border-radius: 8px;
+      border: 2px solid #dde1e7;
+      padding: 10px 15px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #0f3460;
+      box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.15);
+    }
+
+    /* ===== Metadata Panel ===== */
+    #sample-metadata h5 {
+      font-size: 0.9em;
+      padding: 6px 0;
+      margin: 0;
+      border-bottom: 1px solid #f0f2f5;
+      color: #555;
+    }
+
+    #sample-metadata h5:last-child {
+      border-bottom: none;
+    }
+
+    /* ===== Chart Containers ===== */
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+      color: #999;
+      font-size: 0.85em;
+    }
+
+    .footer a {
+      color: #0f3460;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
+  <!-- Header -->
+  <div class="jumbotron">
+    <h1>🦠 Belly Button Biodiversity</h1>
+    <p>Explore the microbes that colonize human navels — select a test subject to see their bacterial profile</p>
+  </div>
 
   <div class="container">
     <div class="row">
-      <div class="col-md-12 jumbotron text-center">
-        <h1>Belly Button Biodiversity Dashboard</h1>
-        <p>Use the interactive charts below to explore the dataset</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-2">
-        <div class="well">
-          <h5>Test Subject ID No.:</h5>
-          <select id="selDataset" onchange="optionChanged(this.value)"></select>
+
+      <!-- Left Sidebar: Dropdown + Metadata + Gauge -->
+      <div class="col-md-3">
+        <!-- Dropdown -->
+        <div class="card">
+          <div class="card-title">Test Subject ID</div>
+          <select id="selDataset" onchange="optionChanged(this.value)" class="form-control"></select>
         </div>
-        <div class="panel panel-primary">
-          <div class="panel-heading">
-            <h3 class="panel-title">Demographic Info</h3>
-          </div>
-          <div id="sample-metadata" class="panel-body"></div>
+
+        <!-- Demographic Info -->
+        <div class="card">
+          <div class="card-title">Demographic Info</div>
+          <div id="sample-metadata"></div>
+        </div>
+
+        <!-- Gauge Chart -->
+        <div class="card">
+          <div class="card-title">Wash Frequency</div>
+          <div id="gauge"></div>
         </div>
       </div>
-      <div class="col-md-5">
-        <div id="bar"></div>
+
+      <!-- Right Content: Charts -->
+      <div class="col-md-9">
+        <!-- Bar Chart -->
+        <div class="chart-container">
+          <div id="bar"></div>
+        </div>
+
+        <!-- Bubble Chart -->
+        <div class="chart-container">
+          <div id="bubble"></div>
+        </div>
       </div>
-      <div class="col-md-5">
-        <div id="gauge"></div>
-      </div>
+
     </div>
-    <div class="row">
-      <div class="col-md-12">
-        <div id="bubble"></div>
-      </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      Built by <a href="https://github.com/cindyliwho" target="_blank">Cindy Li</a> · 
+      Data from the <a href="http://robdunnlab.com/projects/belly-button-biodiversity/" target="_blank">Belly Button Biodiversity Project</a>
     </div>
   </div>
 
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script src="./static/js/app.js"></script>
+  <script src="app.js"></script>
 </body>
 
 </html>
