@@ -31,3 +31,21 @@ All charts update dynamically on subject selection with smooth Plotly rendering.
 | **Hosting** | Netlify (auto-deploys from GitHub) |
 
 ---
+## Data
+
+The dashboard uses the [Belly Button Biodiversity dataset](http://robdunnlab.com/projects/belly-button-biodiversity/), which catalogs the microbes that colonize human navels. The research found that a small handful of microbial species (OTUs) were present in more than 70% of people, while the rest were relatively rare.
+
+The dataset contains:
+- **`names`** — List of anonymized test subject IDs
+- **`metadata`** — Demographics per subject (age, gender, ethnicity, location, wash frequency)
+- **`samples`** — OTU IDs, bacterial labels, and abundance values per subject
+
+Data is fetched from a hosted JSON endpoint at runtime, with a local `samples.json` included as a fallback.
+
+---
+
+## Performance Optimization
+
+- **Data caching** — The dataset is fetched once on page load and cached in memory, eliminating redundant network requests on every dropdown change
+- **Responsive charts** — All Plotly visualizations are configured with `{ responsive: true }` for proper scaling across screen sizes
+- **Transparent backgrounds** — Charts use `rgba(0,0,0,0)` backgrounds to blend seamlessly with the card-based UI
